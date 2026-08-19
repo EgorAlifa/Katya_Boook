@@ -82,10 +82,12 @@ function renderBlocks(blks, sectionTitleRef) {
     }
 
     if (b.type === "image") {
+      // native size (im.w / im.h, as declared by pandoc from the actual file) — the width/height caps
+      // below are only an overflow safety net for the rare oversized photo, not a target size.
       if (b.images.length === 1) {
         const im = b.images[0];
         const maxH = im.h > im.w ? 3.6 : 3.0;
-        const p = figureParagraph(im.file, im.w, im.h, 0.62, maxH);
+        const p = figureParagraph(im.file, im.w, im.h, undefined, maxH);
         if (p) out.push(ruleBreak(200, 0)), out.push(p);
       } else {
         const p = figureRow(b.images, 2.6);
@@ -104,7 +106,7 @@ function renderBlocks(blks, sectionTitleRef) {
       const bodyLines = b.body_text ? [b.body_text] : [];
       out.push(...calloutBox(b.title || null, bodyLines));
       (b.images || []).forEach((im) => {
-        const p = figureParagraph(im.file, im.w, im.h, 0.75, 3.4);
+        const p = figureParagraph(im.file, im.w, im.h, undefined, 3.4);
         if (p) out.push(p);
       });
       continue;

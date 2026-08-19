@@ -31,22 +31,23 @@ const CONTENT_W_IN = (PAGE_W - MARGIN_LR * 2) / 1440;
 
 const IMG_DIR = "/home/claude/work/img";
 
-//////////////////////// IMAGE HELPERS (use pandoc-declared inch sizes) ////////////////////////
-function imgDimsFromDeclared(declWIn, declHIn, widthFrac, maxHeightIn) {
-  let wIn = CONTENT_W_IN * widthFrac;
-  let hIn = wIn * (declHIn / declWIn);
-  if (maxHeightIn && hIn > maxHeightIn) {
-    hIn = maxHeightIn;
-    wIn = hIn * (declWIn / declHIn);
+//////////////////////// IMAGE HELPERS (native size — never resized/rotated, only downscaled if it would overflow the page) ////////////////////////
+function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn) {
+  let wIn = declWIn;
+  let hIn = declHIn;
+  const scale = Math.min(1, maxWidthIn ? maxWidthIn / wIn : 1, maxHeightIn ? maxHeightIn / hIn : 1);
+  if (scale < 1) {
+    wIn *= scale;
+    hIn *= scale;
   }
   return { width: Math.round(wIn * 96), height: Math.round(hIn * 96) };
 }
 
-function imageRunFromFile(file, declWIn, declHIn, widthFrac, maxHeightIn) {
+function imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn) {
   const path = `${IMG_DIR}/${file}`;
   if (!fs.existsSync(path)) return null;
-  const data = fs.readFileSync(path);
-  const dims = imgDimsFromDeclared(declWIn, declHIn, widthFrac, maxHeightIn);
+  const data = fs.readFileSync(path); // raw bytes, unmodified — no rotation applied here or anywhere else
+  const dims = imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn);
   let ext = (file.split(".").pop() || "jpg").toLowerCase();
   if (ext === "jpg") ext = "jpg";
   if (ext === "jpeg") ext = "jpg";
@@ -54,24 +55,25 @@ function imageRunFromFile(file, declWIn, declHIn, widthFrac, maxHeightIn) {
   return new ImageRun({ type: ext, data, transformation: dims });
 }
 
-// single figure, centred, capped to a fraction of content width / max height
-function figureParagraph(file, declWIn, declHIn, widthFrac = 0.7, maxHeightIn = 3.4, spacingBefore = 160, spacingAfter = 60) {
-  const run = imageRunFromFile(file, declWIn, declHIn, widthFrac, maxHeightIn);
+// single figure, centred, at its native size, capped only so it can't overflow the column/page
+function figureParagraph(file, declWIn, declHIn, maxWidthIn = CONTENT_W_IN, maxHeightIn = 3.4, spacingBefore = 160, spacingAfter = 60) {
+  const run = imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn);
   if (!run) return null;
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: spacingBefore, after: spacingAfter },
+    keepNext: true, // keep glued to the caption paragraph that follows
     children: [run],
   });
 }
 
-// several images side-by-side in one row (e.g. two comparison figures)
+// several images side-by-side in one row (e.g. two comparison figures), each still at native size
 function figureRow(items, maxHeightIn = 2.6, spacingBefore = 160, spacingAfter = 60) {
   const n = items.length;
-  const frac = Math.min(0.92 / n, 0.48);
+  const maxWidthIn = CONTENT_W_IN / n - 0.1; // leave a small gutter between images
   const runs = [];
   items.forEach((it, idx) => {
-    const run = imageRunFromFile(it.file, it.w, it.h, frac, maxHeightIn);
+    const run = imageRunFromFile(it.file, it.w, it.h, maxWidthIn, maxHeightIn);
     if (run) {
       if (idx > 0) runs.push(new TextRun({ text: "   " }));
       runs.push(run);
@@ -81,6 +83,7 @@ function figureRow(items, maxHeightIn = 2.6, spacingBefore = 160, spacingAfter =
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: spacingBefore, after: spacingAfter },
+    keepNext: true,
     children: runs,
   });
 }
@@ -88,7 +91,8 @@ function figureRow(items, maxHeightIn = 2.6, spacingBefore = 160, spacingAfter =
 function ruleBreak(spacingBefore = 220, spacingAfter = 0) {
   return new Paragraph({
     spacing: { before: spacingBefore, after: spacingAfter },
-    border: { top: { style: BorderStyle.SINGLE, size: 4, color: RULE, space: 1 } },
+    border: { top: { style: BorderStyle.SINGLE, size: 2, color: RULE, space: 1 } },
+    keepNext: true, // don't strand the rule alone at the bottom of a page, away from what follows it
     children: [new TextRun({ text: "" })],
   });
 }
@@ -97,6 +101,7 @@ function caption(numLabel, desc, spacingAfter = 200) {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: spacingAfter },
+    keepLines: true,
     children: [
       new TextRun({ text: numLabel + " ", bold: true, italics: true, color: NAVY_SOFT, font: FONT_BODY, size: 19 }),
       new TextRun({ text: desc, italics: true, color: GRAY_TXT, font: FONT_BODY, size: 19 }),
@@ -112,7 +117,7 @@ function captionMulti(items, spacingAfter = 200) {
     runs.push(new TextRun({ text: it.num + " ", bold: true, italics: true, color: NAVY_SOFT, font: FONT_BODY, size: 19 }));
     runs.push(new TextRun({ text: it.desc, italics: true, color: GRAY_TXT, font: FONT_BODY, size: 19 }));
   });
-  return new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: spacingAfter }, children: runs });
+  return new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: spacingAfter }, keepLines: true, children: runs });
 }
 
 //////////////////////// TEXT HELPERS ////////////////////////
@@ -141,7 +146,9 @@ function subheading(text) {
   return new Paragraph({
     spacing: { before: 320, after: 160 },
     indent: { left: 200 },
-    border: { left: { style: BorderStyle.SINGLE, size: 18, color: NAVY, space: 8 } },
+    border: { left: { style: BorderStyle.SINGLE, size: 10, color: NAVY, space: 8 } },
+    keepNext: true, // never leave a subheading alone at the bottom of a page
+    keepLines: true,
     children: [new TextRun({ text, bold: true, font: FONT_BODY, size: 24, color: NAVY })],
   });
 }
@@ -149,13 +156,14 @@ function subheading(text) {
 function taskLabel(text) {
   return new Paragraph({
     spacing: { before: 300, after: 100 },
+    keepNext: true,
     children: [
       new TextRun({ text: text.toUpperCase(), bold: true, font: FONT_LABEL, size: 18, color: NAVY_SOFT, characterSpacing: 18 }),
     ],
   });
 }
 
-function box(paragraphs, { fill, borderColor, borderSize = 6, sides = ["top", "bottom", "left", "right"] }) {
+function box(paragraphs, { fill, borderColor, borderSize = 3, sides = ["top", "bottom", "left", "right"] }) {
   const spec = { style: BorderStyle.SINGLE, size: borderSize, color: borderColor };
   const borders = {};
   sides.forEach((s) => (borders[s] = spec));
@@ -169,12 +177,16 @@ function box(paragraphs, { fill, borderColor, borderSize = 6, sides = ["top", "b
     margins: { top: 160, bottom: 160, left: 220, right: 220 },
     width: { size: 100, type: WidthType.PERCENTAGE },
   });
-  return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ children: [cell] })] });
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [new TableRow({ cantSplit: true, children: [cell] })], // keep the whole box on one page
+  });
 }
 
 function answerLabel() {
   return new Paragraph({
     spacing: { before: 220, after: 100 },
+    keepNext: true,
     children: [new TextRun({ text: "ОТВЕТ", bold: true, font: FONT_LABEL, size: 18, color: NAVY_SOFT, characterSpacing: 18 })],
   });
 }
@@ -195,11 +207,13 @@ function calloutBox(title, bodyLines) {
   const paras = [];
   paras.push(new Paragraph({
     spacing: { after: 90 },
+    keepNext: true,
     children: [new TextRun({ text: "ЭТО ИНТЕРЕСНО", bold: true, font: FONT_LABEL, size: 17, color: NAVY_SOFT, characterSpacing: 20 })],
   }));
   if (title) {
     paras.push(new Paragraph({
       spacing: { after: 90 },
+      keepNext: true,
       children: [new TextRun({ text: title, bold: true, italics: true, font: FONT_BODY, size: 21, color: NAVY })],
     }));
   }
@@ -211,7 +225,7 @@ function calloutBox(title, bodyLines) {
     }));
   });
   return [
-    box(paras, { fill: CALLOUT_BG, borderColor: CALLOUT_BORDER, borderSize: 4 }),
+    box(paras, { fill: CALLOUT_BG, borderColor: CALLOUT_BORDER, borderSize: 2 }),
     new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: "" })] }),
   ];
 }
@@ -222,12 +236,14 @@ function chapterOpener(num, title) {
   if (kicker) {
     arr.push(new Paragraph({
       spacing: { before: 0, after: 120 },
+      keepNext: true,
       children: [new TextRun({ text: kicker, bold: true, font: FONT_LABEL, size: 19, color: NAVY_SOFT, characterSpacing: 32 })],
     }));
   }
   arr.push(new Paragraph({
     spacing: { before: 0, after: 240 },
-    border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: RULE, space: 14 } },
+    border: { bottom: { style: BorderStyle.SINGLE, size: 3, color: RULE, space: 14 } },
+    keepNext: true,
     children: [new TextRun({ text: title, bold: true, font: FONT_BODY, size: 38, color: NAVY })],
   }));
   return arr;
@@ -237,7 +253,8 @@ function introHeading(text) {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: 0, after: 320 },
-    border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: RULE, space: 12 } },
+    border: { bottom: { style: BorderStyle.SINGLE, size: 3, color: RULE, space: 12 } },
+    keepNext: true,
     children: [new TextRun({ text, bold: true, font: FONT_BODY, size: 32, color: NAVY, characterSpacing: 20 })],
   });
 }
@@ -249,7 +266,7 @@ function makeHeader(bookTitle) {
       new Paragraph({
         tabStops: [{ type: TabStopType.RIGHT, position: PAGE_W - MARGIN_LR * 2 }],
         spacing: { after: 60 },
-        border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: RULE, space: 6 } },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: RULE, space: 6 } },
         children: [
           new TextRun({ text: bookTitle, italics: true, font: FONT_BODY, size: 17, color: GRAY_TXT }),
           new TextRun({ text: "\t", font: FONT_BODY }),
@@ -265,7 +282,7 @@ function makeFooter(sectionTitle) {
     children: [
       new Paragraph({
         tabStops: [{ type: TabStopType.RIGHT, position: PAGE_W - MARGIN_LR * 2 }],
-        border: { top: { style: BorderStyle.SINGLE, size: 4, color: RULE, space: 6 } },
+        border: { top: { style: BorderStyle.SINGLE, size: 2, color: RULE, space: 6 } },
         children: [
           new TextRun({ text: sectionTitle, font: FONT_BODY, size: 17, color: GRAY_TXT }),
           new TextRun({ text: "\t", font: FONT_BODY }),
@@ -291,7 +308,7 @@ module.exports = {
   NAVY, NAVY_SOFT, RULE, RULE_SOFT, CALLOUT_BG, CALLOUT_BORDER, GRAY_TXT, INK,
   FONT_BODY, FONT_LABEL, PAGE_W, PAGE_H, MARGIN_LR, MARGIN_TOP, MARGIN_BOTTOM,
   HEADER_H, FOOTER_H, CONTENT_W_IN, IMG_DIR,
-  imgDimsFromDeclared, imageRunFromFile, figureParagraph, figureRow, ruleBreak,
+  imgDimsNative, imageRunFromFile, figureParagraph, figureRow, ruleBreak,
   caption, captionMulti, body, bodyDropCap, subheading, taskLabel, box,
   answerLabel, answerText, answerBox, calloutBox, chapterOpener, introHeading,
   makeHeader, makeFooter, pageProps,
