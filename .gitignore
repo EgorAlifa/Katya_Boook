@@ -1,0 +1,11 @@
+# build artifacts reproducible via README pipeline
+node_modules/
+package.json
+package-lock.json
+original_unzip/
+img/
+book.md
+book_full.pdf
+book_full.txt
+parsed_raw.json
+classified.json

@@ -10,9 +10,10 @@ const {
   caption, captionMulti, ruleBreak,
 } = D;
 const fs = require("fs");
+const path = require("path");
 
 const BOOK_TITLE = "Вместе с космонавтами. Путешествие по Луне и Марсу";
-const blocks = JSON.parse(fs.readFileSync("/home/claude/work/classified.json", "utf8"));
+const blocks = JSON.parse(fs.readFileSync(path.join(__dirname, "classified.json"), "utf8"));
 
 //////////////////////// split into logical sections ////////////////////////
 // [0]=intro (before first chapter_mark), [1..3]=chapters, [4]=conclusion(after conclusion_mark)
@@ -223,7 +224,7 @@ segments.forEach((seg) => {
 //////////////////////// Table of contents (real page numbers from render pass) ////////////////////////
 let tocPages = null;
 try {
-  tocPages = JSON.parse(fs.readFileSync("/home/claude/work/toc_pages.json", "utf8"));
+  tocPages = JSON.parse(fs.readFileSync(path.join(__dirname, "toc_pages.json"), "utf8"));
 } catch (e) {
   tocPages = null;
 }
@@ -331,6 +332,6 @@ const doc = new Document({
 });
 
 Packer.toBuffer(doc).then((buf) => {
-  fs.writeFileSync("/home/claude/work/book_full.docx", buf);
+  fs.writeFileSync(path.join(__dirname, "book_full.docx"), buf);
   console.log("written", buf.length, "sections:", docSections.length);
 });
