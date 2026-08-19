@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path_ = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Header, Footer,
   AlignmentType, BorderStyle, ShadingType, HeightRule, WidthType,
@@ -29,7 +30,7 @@ const HEADER_H = 500;
 const FOOTER_H = 620;
 const CONTENT_W_IN = (PAGE_W - MARGIN_LR * 2) / 1440;
 
-const IMG_DIR = "/home/claude/work/img";
+const IMG_DIR = path_.join(__dirname, "img");
 
 //////////////////////// IMAGE HELPERS (native size — never resized/rotated, only downscaled if it would overflow the page) ////////////////////////
 function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn) {
