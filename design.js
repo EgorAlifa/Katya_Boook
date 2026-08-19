@@ -32,11 +32,19 @@ const CONTENT_W_IN = (PAGE_W - MARGIN_LR * 2) / 1440;
 
 const IMG_DIR = path_.join(__dirname, "img");
 
-//////////////////////// IMAGE HELPERS (native size — never resized/rotated, only downscaled if it would overflow the page) ////////////////////////
-function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn) {
+//////////////////////// IMAGE HELPERS (native size from the original docx — never
+// resized/re-rotated on our own initiative; only downscaled if it would overflow the
+// page, and rotated ONLY when the original document itself rotated that picture) ////////////////////////
+function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn, rotation = 0) {
   let wIn = declWIn;
   let hIn = declHIn;
-  const scale = Math.min(1, maxWidthIn ? maxWidthIn / wIn : 1, maxHeightIn ? maxHeightIn / hIn : 1);
+  // a:xfrm/@rot in the original rotates the picture around the center of its own
+  // (unrotated) frame — declWIn/declHIn stay the frame's local size, but the
+  // on-page footprint swaps for a 90/270 rotation, so check overflow against that.
+  const swapped = ((rotation % 360) + 360) % 360 % 180 !== 0;
+  const footW = swapped ? hIn : wIn;
+  const footH = swapped ? wIn : hIn;
+  const scale = Math.min(1, maxWidthIn ? maxWidthIn / footW : 1, maxHeightIn ? maxHeightIn / footH : 1);
   if (scale < 1) {
     wIn *= scale;
     hIn *= scale;
@@ -44,21 +52,23 @@ function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn) {
   return { width: Math.round(wIn * 96), height: Math.round(hIn * 96) };
 }
 
-function imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn) {
+function imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn, rotation = 0) {
   const path = `${IMG_DIR}/${file}`;
   if (!fs.existsSync(path)) return null;
-  const data = fs.readFileSync(path); // raw bytes, unmodified — no rotation applied here or anywhere else
-  const dims = imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn);
+  const data = fs.readFileSync(path); // raw bytes, unmodified — the only transform ever
+  // applied is the rotation the original docx itself recorded (a:xfrm/@rot), reproduced
+  // as-is via docx's ImageRun transformation.rotation; never invented on our own.
+  const dims = imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn, rotation);
   let ext = (file.split(".").pop() || "jpg").toLowerCase();
   if (ext === "jpg") ext = "jpg";
   if (ext === "jpeg") ext = "jpg";
   if (!["png", "jpg", "gif", "bmp"].includes(ext)) ext = "jpg";
-  return new ImageRun({ type: ext, data, transformation: dims });
+  return new ImageRun({ type: ext, data, transformation: { ...dims, rotation: rotation || undefined } });
 }
 
 // single figure, centred, at its native size, capped only so it can't overflow the column/page
-function figureParagraph(file, declWIn, declHIn, maxWidthIn = CONTENT_W_IN, maxHeightIn = 3.4, spacingBefore = 160, spacingAfter = 60) {
-  const run = imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn);
+function figureParagraph(file, declWIn, declHIn, maxWidthIn = CONTENT_W_IN, maxHeightIn = 3.4, spacingBefore = 160, spacingAfter = 60, rotation = 0) {
+  const run = imageRunFromFile(file, declWIn, declHIn, maxWidthIn, maxHeightIn, rotation);
   if (!run) return null;
   return new Paragraph({
     alignment: AlignmentType.CENTER,
@@ -74,7 +84,7 @@ function figureRow(items, maxHeightIn = 2.6, spacingBefore = 160, spacingAfter =
   const maxWidthIn = CONTENT_W_IN / n - 0.1; // leave a small gutter between images
   const runs = [];
   items.forEach((it, idx) => {
-    const run = imageRunFromFile(it.file, it.w, it.h, maxWidthIn, maxHeightIn);
+    const run = imageRunFromFile(it.file, it.w, it.h, maxWidthIn, maxHeightIn, it.rotation || 0);
     if (run) {
       if (idx > 0) runs.push(new TextRun({ text: "   " }));
       runs.push(run);
