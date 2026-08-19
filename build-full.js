@@ -4,13 +4,18 @@ const {
   BorderStyle, PageNumber, PageBreak, Table, TableRow, TableCell, WidthType,
   ShadingType, TabStopType,
   NAVY, NAVY_SOFT, RULE, GRAY_TXT, INK, FONT_BODY, FONT_LABEL,
-  PAGE_W, MARGIN_LR, pageProps, makeHeader, makeFooter,
+  PAGE_W, PAGE_H, MARGIN_LR, MARGIN_TOP, MARGIN_BOTTOM, HEADER_H, FOOTER_H,
+  CONTENT_W_IN, pageProps, makeHeader, makeFooter,
   body, bodyDropCap, subheading, taskLabel, answerLabel, answerText, answerBox,
   calloutBox, chapterOpener, introHeading, figureParagraph, figureRow,
   caption, captionMulti, ruleBreak,
 } = D;
 const fs = require("fs");
 const path = require("path");
+
+// usable body height on a content page (page height minus margins/header/footer), for
+// sizing figures the original docx rotated 90/270° to run the full height of the page.
+const PAGE_BODY_H_IN = (PAGE_H - MARGIN_TOP - MARGIN_BOTTOM - HEADER_H - FOOTER_H) / 1440;
 
 const BOOK_TITLE = "Вместе с космонавтами. Путешествие по Луне и Марсу";
 const blocks = JSON.parse(fs.readFileSync(path.join(__dirname, "classified.json"), "utf8"));
@@ -83,12 +88,17 @@ function renderBlocks(blks, sectionTitleRef) {
     }
 
     if (b.type === "image") {
-      // native size (im.w / im.h, as declared by pandoc from the actual file) — the width/height caps
-      // below are only an overflow safety net for the rare oversized photo, not a target size.
+      // native size (im.w / im.h, as recorded in the original docx's own wp:extent) — the
+      // width/height caps below are only an overflow safety net for the rare oversized
+      // photo, not a target size. A handful of figures were deliberately rotated 90/270°
+      // by the original authors to run the full height of the page (a:xfrm/@rot) — give
+      // those the full body-column height instead of the normal figure cap.
       if (b.images.length === 1) {
         const im = b.images[0];
-        const maxH = im.h > im.w ? 3.6 : 3.0;
-        const p = figureParagraph(im.file, im.w, im.h, undefined, maxH);
+        const rotation = im.rotation || 0;
+        const sideways = rotation % 180 !== 0;
+        const maxH = sideways ? PAGE_BODY_H_IN : (im.h > im.w ? 3.6 : 3.0);
+        const p = figureParagraph(im.file, im.w, im.h, undefined, maxH, 160, 60, rotation);
         if (p) out.push(ruleBreak(200, 0)), out.push(p);
       } else {
         const p = figureRow(b.images, 2.6);
@@ -107,7 +117,7 @@ function renderBlocks(blks, sectionTitleRef) {
       const bodyLines = b.body_text ? [b.body_text] : [];
       out.push(...calloutBox(b.title || null, bodyLines));
       (b.images || []).forEach((im) => {
-        const p = figureParagraph(im.file, im.w, im.h, undefined, 3.4);
+        const p = figureParagraph(im.file, im.w, im.h, undefined, 3.4, 160, 60, im.rotation || 0);
         if (p) out.push(p);
       });
       continue;

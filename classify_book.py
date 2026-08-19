@@ -211,8 +211,41 @@ for b in out:
         b["body_text"] = bt
         b["images"] = [{"file": f + "." + ext, "w": float(w), "h": float(h)} for f, ext, w, h in parsed["images"]]
 
-json.dump(out, open("classified.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print("callouts parsed")
 for b in out:
     if b["type"] == "callout":
         print("CALLOUT title:", b["title"], "| body:", b["body_text"][:80], "| imgs:", b["images"])
+
+# ---- enrich every image with authoritative size/rotation from the original
+# docx (pandoc only gives raw pixel size of the file, not what Word actually
+# displayed it at, and drops rotation entirely — see extract_image_layout.py).
+# Occurrences of the same file are consumed in document order.
+try:
+    image_layout = json.load(open("image_layout.json", encoding="utf-8"))
+except FileNotFoundError:
+    image_layout = {}
+    print("WARNING: image_layout.json not found — run extract_image_layout.py first; "
+          "sizes/rotation will fall back to pandoc's raw-pixel values (no rotation).")
+
+_next_occurrence = {f: 0 for f in image_layout}
+n_rotated = 0
+for b in out:
+    imglist = b.get("images") if b["type"] in ("image", "callout") else None
+    if not imglist:
+        continue
+    for im in imglist:
+        occs = image_layout.get(im["file"])
+        if not occs:
+            im["rotation"] = 0
+            continue
+        idx = min(_next_occurrence[im["file"]], len(occs) - 1)
+        _next_occurrence[im["file"]] += 1
+        occ = occs[idx]
+        im["w"] = occ["w_in"]
+        im["h"] = occ["h_in"]
+        im["rotation"] = occ["rotation"]
+        if occ["rotation"]:
+            n_rotated += 1
+print(f"image layout enrichment: {n_rotated} rotated image occurrence(s)")
+
+json.dump(out, open("classified.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

@@ -1,0 +1,1411 @@
+{
+  "image1.jpeg": [
+    {
+      "w_in": 11.0681,
+      "h_in": 6.1035,
+      "rotation": 270.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image2.png": [
+    {
+      "w_in": 4.5907,
+      "h_in": 4.0729,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image3.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 4.2708,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image4.png": [
+    {
+      "w_in": 3.4228,
+      "h_in": 3.2083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image5.png": [
+    {
+      "w_in": 6.9964,
+      "h_in": 2.7292,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image6.jpeg": [
+    {
+      "w_in": 4.0,
+      "h_in": 4.0382,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image7.jpeg": [
+    {
+      "w_in": 3.5625,
+      "h_in": 4.0771,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image8.jpeg": [
+    {
+      "w_in": 4.5535,
+      "h_in": 3.5,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image9.jpeg": [
+    {
+      "w_in": 5.1688,
+      "h_in": 4.1944,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image10.jpeg": [
+    {
+      "w_in": 5.1528,
+      "h_in": 3.5417,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image11.jpeg": [
+    {
+      "w_in": 6.25,
+      "h_in": 4.575,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image12.jpeg": [
+    {
+      "w_in": 6.3056,
+      "h_in": 4.5854,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image13.png": [
+    {
+      "w_in": 6.6684,
+      "h_in": 3.0972,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image14.jpeg": [
+    {
+      "w_in": 4.9604,
+      "h_in": 4.6542,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image15.jpeg": [
+    {
+      "w_in": 6.7021,
+      "h_in": 3.5625,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image16.jpeg": [
+    {
+      "w_in": 6.7083,
+      "h_in": 4.7924,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image17.jpeg": [
+    {
+      "w_in": 6.675,
+      "h_in": 4.7979,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image18.jpeg": [
+    {
+      "w_in": 6.9931,
+      "h_in": 0.8889,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image19.jpeg": [
+    {
+      "w_in": 4.9917,
+      "h_in": 4.9792,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image20.jpeg": [
+    {
+      "w_in": 6.7965,
+      "h_in": 4.2292,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image21.jpeg": [
+    {
+      "w_in": 6.7917,
+      "h_in": 4.2368,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image22.jpeg": [
+    {
+      "w_in": 6.9153,
+      "h_in": 4.2167,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image23.jpeg": [
+    {
+      "w_in": 6.9542,
+      "h_in": 4.2708,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image24.png": [
+    {
+      "w_in": 6.5621,
+      "h_in": 4.8554,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image25.jpeg": [
+    {
+      "w_in": 10.5118,
+      "h_in": 6.5833,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image26.jpeg": [
+    {
+      "w_in": 7.1306,
+      "h_in": 6.0222,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image27.jpeg": [
+    {
+      "w_in": 6.7743,
+      "h_in": 4.9444,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image28.jpeg": [
+    {
+      "w_in": 6.8993,
+      "h_in": 5.0278,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image29.jpeg": [
+    {
+      "w_in": 6.7938,
+      "h_in": 5.5139,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image30.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 2.8396,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image31.png": [
+    {
+      "w_in": 6.4583,
+      "h_in": 4.6875,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image32.png": [
+    {
+      "w_in": 5.9014,
+      "h_in": 2.9299,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image33.png": [
+    {
+      "w_in": 6.6931,
+      "h_in": 1.6958,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image34.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 4.0931,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image35.png": [
+    {
+      "w_in": 7.3611,
+      "h_in": 5.4146,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image36.jpg": [
+    {
+      "w_in": 7.746,
+      "h_in": 4.3611,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image37.jpeg": [
+    {
+      "w_in": 3.5278,
+      "h_in": 3.6424,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image38.jpeg": [
+    {
+      "w_in": 6.9285,
+      "h_in": 3.5618,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image39.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 3.5077,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image40.jpeg": [
+    {
+      "w_in": 3.5398,
+      "h_in": 3.7083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image41.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 4.016,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image42.png": [
+    {
+      "w_in": 7.009,
+      "h_in": 8.2917,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image43.png": [
+    {
+      "w_in": 7.0896,
+      "h_in": 7.875,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image44.jpeg": [
+    {
+      "w_in": 6.6306,
+      "h_in": 3.625,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image45.png": [
+    {
+      "w_in": 6.6931,
+      "h_in": 1.6424,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image46.png": [
+    {
+      "w_in": 6.6931,
+      "h_in": 3.7069,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image47.jpeg": [
+    {
+      "w_in": 6.4847,
+      "h_in": 6.1111,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image48.png": [
+    {
+      "w_in": 6.804,
+      "h_in": 2.5417,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image49.jpeg": [
+    {
+      "w_in": 6.7882,
+      "h_in": 4.2083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image50.jpeg": [
+    {
+      "w_in": 6.7667,
+      "h_in": 4.1389,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image51.jpeg": [
+    {
+      "w_in": 5.1292,
+      "h_in": 5.0972,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image52.jpeg": [
+    {
+      "w_in": 5.1437,
+      "h_in": 5.05,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image53.jpeg": [
+    {
+      "w_in": 10.2611,
+      "h_in": 6.2854,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    },
+    {
+      "w_in": 10.5417,
+      "h_in": 6.4583,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image54.jpeg": [
+    {
+      "w_in": 10.5403,
+      "h_in": 6.3611,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    },
+    {
+      "w_in": 10.5403,
+      "h_in": 6.3611,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image55.jpeg": [
+    {
+      "w_in": 6.7042,
+      "h_in": 4.125,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image56.jpeg": [
+    {
+      "w_in": 6.7222,
+      "h_in": 5.0889,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image57.jpeg": [
+    {
+      "w_in": 10.6486,
+      "h_in": 6.5139,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image58.jpeg": [
+    {
+      "w_in": 6.734,
+      "h_in": 4.7222,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image59.jpeg": [
+    {
+      "w_in": 5.4167,
+      "h_in": 5.2639,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image60.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 4.7812,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image61.jpeg": [
+    {
+      "w_in": 10.0639,
+      "h_in": 6.1125,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image62.jpeg": [
+    {
+      "w_in": 6.2222,
+      "h_in": 4.5972,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image63.jpeg": [
+    {
+      "w_in": 10.6896,
+      "h_in": 6.4326,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image64.jpeg": [
+    {
+      "w_in": 5.0771,
+      "h_in": 5.1111,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image65.jpeg": [
+    {
+      "w_in": 6.7181,
+      "h_in": 4.8194,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image66.jpeg": [
+    {
+      "w_in": 10.3194,
+      "h_in": 6.4931,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image67.jpeg": [
+    {
+      "w_in": 7.0812,
+      "h_in": 5.2083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image68.jpeg": [
+    {
+      "w_in": 10.5799,
+      "h_in": 6.5556,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image69.jpeg": [
+    {
+      "w_in": 5.0972,
+      "h_in": 4.9944,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image70.jpeg": [
+    {
+      "w_in": 6.4632,
+      "h_in": 4.8611,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image71.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 3.8826,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image72.jpeg": [
+    {
+      "w_in": 6.1361,
+      "h_in": 4.5417,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image73.jpeg": [
+    {
+      "w_in": 6.7875,
+      "h_in": 3.8333,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image74.jpeg": [
+    {
+      "w_in": 6.2771,
+      "h_in": 4.5139,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image75.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 5.4583,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image76.jpeg": [
+    {
+      "w_in": 6.625,
+      "h_in": 5.6785,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image77.png": [
+    {
+      "w_in": 6.6979,
+      "h_in": 2.4028,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image78.jpeg": [
+    {
+      "w_in": 6.5694,
+      "h_in": 4.604,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image79.jpeg": [
+    {
+      "w_in": 6.8222,
+      "h_in": 1.9167,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image80.jpeg": [
+    {
+      "w_in": 6.8556,
+      "h_in": 4.7639,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image81.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 4.625,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image82.jpeg": [
+    {
+      "w_in": 0.3535,
+      "h_in": 0.375,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image83.jpeg": [
+    {
+      "w_in": 0.4611,
+      "h_in": 0.3868,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image84.jpeg": [
+    {
+      "w_in": 0.5312,
+      "h_in": 0.4139,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image85.jpeg": [
+    {
+      "w_in": 0.4785,
+      "h_in": 0.4319,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image86.jpeg": [
+    {
+      "w_in": 0.4792,
+      "h_in": 0.3868,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image87.jpeg": [
+    {
+      "w_in": 0.4278,
+      "h_in": 0.3924,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image88.jpeg": [
+    {
+      "w_in": 0.5333,
+      "h_in": 0.4062,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image89.jpeg": [
+    {
+      "w_in": 0.4354,
+      "h_in": 0.3931,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image90.png": [
+    {
+      "w_in": 4.5569,
+      "h_in": 4.625,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image91.jpeg": [
+    {
+      "w_in": 10.5778,
+      "h_in": 5.9028,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image92.jpeg": [
+    {
+      "w_in": 10.5681,
+      "h_in": 6.3056,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image93.jpeg": [
+    {
+      "w_in": 4.8194,
+      "h_in": 4.8083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image94.jpeg": [
+    {
+      "w_in": 6.742,
+      "h_in": 4.7361,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image95.jpeg": [
+    {
+      "w_in": 6.7201,
+      "h_in": 1.875,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image96.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 2.991,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image97.jpeg": [
+    {
+      "w_in": 5.734,
+      "h_in": 7.0556,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image98.jpeg": [
+    {
+      "w_in": 6.9194,
+      "h_in": 3.6944,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image99.jpeg": [
+    {
+      "w_in": 6.5951,
+      "h_in": 3.3472,
+      "rotation": 180.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image100.png": [
+    {
+      "w_in": 5.1667,
+      "h_in": 3.5104,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image101.png": [
+    {
+      "w_in": 7.2777,
+      "h_in": 5.2778,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image102.png": [
+    {
+      "w_in": 7.1667,
+      "h_in": 2.8333,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image103.gif": [
+    {
+      "w_in": 3.5674,
+      "h_in": 2.9167,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image104.jpeg": [
+    {
+      "w_in": 2.5972,
+      "h_in": 2.3319,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image105.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 4.1354,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image106.png": [
+    {
+      "w_in": 11.1181,
+      "h_in": 5.6944,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image107.jpeg": [
+    {
+      "w_in": 6.5677,
+      "h_in": 3.7778,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image108.jpeg": [
+    {
+      "w_in": 4.8736,
+      "h_in": 4.0514,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image109.jpeg": [
+    {
+      "w_in": 5.8705,
+      "h_in": 4.0833,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image110.jpeg": [
+    {
+      "w_in": 5.6833,
+      "h_in": 3.9764,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image111.jpeg": [
+    {
+      "w_in": 11.9306,
+      "h_in": 4.9814,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image112.jpeg": [
+    {
+      "w_in": 5.2396,
+      "h_in": 4.281,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image113.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 2.8646,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image114.jpeg": [
+    {
+      "w_in": 6.8194,
+      "h_in": 4.5229,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image115.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 4.4917,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image116.jpeg": [
+    {
+      "w_in": 4.3667,
+      "h_in": 4.3889,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image117.jpeg": [
+    {
+      "w_in": 6.6944,
+      "h_in": 4.8,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image118.jpeg": [
+    {
+      "w_in": 6.6757,
+      "h_in": 5.0986,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image119.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 4.1458,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image120.jpeg": [
+    {
+      "w_in": 6.6111,
+      "h_in": 3.7986,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image121.jpeg": [
+    {
+      "w_in": 6.8896,
+      "h_in": 3.9306,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image122.jpeg": [
+    {
+      "w_in": 6.8444,
+      "h_in": 3.25,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image123.jpeg": [
+    {
+      "w_in": 6.6833,
+      "h_in": 3.2222,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image124.jpeg": [
+    {
+      "w_in": 6.7964,
+      "h_in": 1.5278,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image125.jpeg": [
+    {
+      "w_in": 6.6338,
+      "h_in": 1.4583,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image126.jpeg": [
+    {
+      "w_in": 6.6204,
+      "h_in": 1.4444,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image127.jpeg": [
+    {
+      "w_in": 5.1667,
+      "h_in": 3.7188,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image128.jpeg": [
+    {
+      "w_in": 4.4583,
+      "h_in": 4.4136,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image129.jpeg": [
+    {
+      "w_in": 6.6603,
+      "h_in": 4.7778,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image130.jpeg": [
+    {
+      "w_in": 6.5653,
+      "h_in": 4.7639,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image131.jpeg": [
+    {
+      "w_in": 4.1562,
+      "h_in": 3.9896,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image132.jpeg": [
+    {
+      "w_in": 4.1562,
+      "h_in": 3.2812,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image133.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 4.2083,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image134.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 3.1146,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image135.png": [
+    {
+      "w_in": 7.1539,
+      "h_in": 2.8889,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image136.png": [
+    {
+      "w_in": 6.6931,
+      "h_in": 1.0354,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image137.jpeg": [
+    {
+      "w_in": 6.7433,
+      "h_in": 5.2222,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image138.png": [
+    {
+      "w_in": 6.6147,
+      "h_in": 1.875,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image139.png": [
+    {
+      "w_in": 6.6389,
+      "h_in": 1.058,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image140.jpeg": [
+    {
+      "w_in": 6.7763,
+      "h_in": 5.0139,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image141.png": [
+    {
+      "w_in": 6.6931,
+      "h_in": 2.2514,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image142.jpeg": [
+    {
+      "w_in": 6.7407,
+      "h_in": 4.0556,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image143.jpeg": [
+    {
+      "w_in": 6.625,
+      "h_in": 4.7963,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image144.jpeg": [
+    {
+      "w_in": 6.6925,
+      "h_in": 3.75,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image145.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 4.0,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image146.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 3.875,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image147.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 3.8438,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image148.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 3.5694,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image149.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 3.1979,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image150.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 3.8854,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image151.png": [
+    {
+      "w_in": 4.7361,
+      "h_in": 3.6559,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image152.png": [
+    {
+      "w_in": 4.1562,
+      "h_in": 4.2917,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image153.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 3.5417,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image154.jpeg": [
+    {
+      "w_in": 6.3021,
+      "h_in": 4.0729,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ],
+  "image155.jpeg": [
+    {
+      "w_in": 4.1562,
+      "h_in": 4.0312,
+      "rotation": 0.0,
+      "flipH": false,
+      "flipV": false
+    }
+  ]
+}
