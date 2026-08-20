@@ -36,8 +36,10 @@ def strip_md(s):
 
 out = []
 i = 0
-n = len(parts)
-while i < n:
+# NOTE: not a fixed `n = len(parts)` — the image-only branch below can splice a
+# leftover part back into this list (parts.insert), so the loop bound must be
+# re-read live.
+while i < len(parts):
     p = parts[i]
     dp = despace(p)
     pl = plain(p)
@@ -82,11 +84,22 @@ while i < n:
         i += 1
         continue
 
-    # image-only block (possibly multiple images concatenated)
+    # image-only block (possibly multiple images concatenated). Guard: this used
+    # to fire on ANY short block starting with an image regardless of what
+    # followed it, silently discarding trailing text under the 400-char cutoff —
+    # in this book that's the image glued directly to its OWN caption with no
+    # blank line in between ("![img]{...}**Рисунок 1-9.** *...*"), so 24 captions
+    # (and a couple of "ОТВЕТ" labels / short sentences) were vanishing outright.
+    # Now: only treat it as a pure image block if nothing but the image tag(s)
+    # remain after stripping; otherwise splice the leftover back in as the next
+    # part so it runs through the classifier fresh (as a caption/label/para/etc).
     imgs = IMG_RE.findall(p)
     if imgs and len(p) < 400 and p.strip().startswith("!["):
+        leftover = IMG_RE.sub("", p).strip()
         out.append({"type": "image", "images": [{"file": f, "w": float(w), "h": float(h)} for f, w, h in imgs]})
         i += 1
+        if leftover:
+            parts.insert(i, leftover)
         continue
 
     # figure caption(s) — possibly more than one caption in the same block
@@ -167,12 +180,32 @@ while i < n:
         i += 1
         continue
 
-    # default: regular paragraph (extract any inline image first — some
-    # figures are glued mid-sentence in the original layout)
+    # default: regular paragraph (extract any inline image first — some figures
+    # are glued into the flow in the original layout). Order depends on where:
+    # a block that itself STARTS with the image (common: image glued directly
+    # ahead of its own caption/description) keeps image-then-text, matching the
+    # source. But when real lead-in prose precedes the image — the image just
+    # happens to be anchored near the end of a sentence, an artifact of Word's
+    # inline anchoring, not a meaningful position — hoisting the image in front
+    # used to visibly split the sentence around it (e.g. "...длится 686,98
+    # земных [IMAGE] суток." → caption stranded below an intervening paragraph).
+    # Keep the sentence whole and put the image after it instead.
     inline_imgs = IMG_RE.findall(p)
     if inline_imgs:
-        out.append({"type": "image", "images": [{"file": f, "w": float(w), "h": float(h)} for f, w, h in inline_imgs]})
-        p = IMG_RE.sub("", p)
+        starts_with_image = p.strip().startswith("![")
+        text = strip_md(IMG_RE.sub("", p))
+        img_block = {"type": "image", "images": [{"file": f, "w": float(w), "h": float(h)} for f, w, h in inline_imgs]}
+        if starts_with_image:
+            out.append(img_block)
+            if text:
+                out.append({"type": "para", "text": text})
+        else:
+            if text:
+                out.append({"type": "para", "text": text})
+            out.append(img_block)
+        i += 1
+        continue
+
     text = strip_md(p)
     if text:
         out.append({"type": "para", "text": text})
