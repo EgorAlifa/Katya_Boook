@@ -5,6 +5,7 @@ package-lock.json
 original_unzip/
 img/
 book.md
+book_full.pdf
 book_full.txt
 book_full.docx
 parsed_raw.json
