@@ -16,9 +16,17 @@ def plain(s):
 
 IMG_RE = re.compile(r'!\[[^\]]*\]\(media/(image\d+\.\w+)\)\{width="([\d.]+)in"\s*\n?\s*height="([\d.]+)in"\}')
 CAP_RE = re.compile(r'\*\*(Рисунок[^*]+?)\*\*\s*\*([^*]*)\*')
+# "1/S=1/T~Земли~ -- 1/T~внеш~." — pandoc renders the book's subscripted formula
+# variables as ~sub~; matches both the outer- and inner-planet variants.
+FORMULA_RE = re.compile(r'1/S\s*=\s*1/T~([^~]+)~\s*(?:--|—|−|-)\s*1/T~([^~]+)~\.?')
 
 def strip_md(s):
     s = s.replace("\u2009", "")
+    # pandoc subscript syntax "T~\u0417\u0435\u043c\u043b\u0438~" -> "T(\u0417\u0435\u043c\u043b\u0438)" \u2014 plain strip_md left the
+    # tildes in literally; this reads clearly without them in running prose
+    # (the formula's own T~sub~ occurrences are pulled out separately by FORMULA_RE
+    # before strip_md ever sees them, so this only fires on inline mentions).
+    s = re.sub(r"([A-Za-z\u0410-\u042f\u0430-\u044f\u0401\u0451])~([^~]+)~", r"\1(\2)", s)
     s = re.sub(r"\*\*(.*?)\*\*", r"\1", s, flags=re.S)
     s = re.sub(r"\*(.*?)\*", r"\1", s, flags=re.S)
     s = re.sub(r"^>\s*", "", s, flags=re.M)
@@ -111,10 +119,18 @@ while i < n:
         i += 1
         continue
 
-    # drop-cap paragraph: starts with **X** then lowercase continuation
+    # drop-cap paragraph: starts with **X** then lowercase continuation (extract
+    # any inline image glued mid-sentence first — same as the default-paragraph
+    # case below, otherwise the raw ![](...) markdown leaks into the text as-is)
     m = re.match(r"^\*\*([А-ЯA-Z])\*\*(.+)$", p, flags=re.S)
     if m:
-        out.append({"type": "para_dropcap", "letter": m.group(1), "text": strip_md(m.group(2))})
+        rest = m.group(2)
+        inline_imgs = IMG_RE.findall(rest)
+        if inline_imgs:
+            rest = IMG_RE.sub("", rest)
+        out.append({"type": "para_dropcap", "letter": m.group(1), "text": strip_md(rest)})
+        if inline_imgs:
+            out.append({"type": "image", "images": [{"file": f, "w": float(w), "h": float(h)} for f, w, h in inline_imgs]})
         i += 1
         continue
 
@@ -132,6 +148,22 @@ while i < n:
                 out.append({"type": "subheading", "text": strip_md(mm.group(1))})
             else:
                 out.append({"type": "para", "text": strip_md(remainder)})
+        i += 1
+        continue
+
+    # synodic-period formula ("1/S=1/T~Земли~ -- 1/T~внеш~.") — split out of its
+    # surrounding sentence (it may be a standalone block, or trail a lead-in
+    # sentence in the same paragraph) into a real "formula" block, rendered
+    # later as a native, editable Word Equation rather than left as plain text.
+    fm = FORMULA_RE.search(p)
+    if fm:
+        pre_text = strip_md(p[:fm.start()]).strip()
+        if pre_text:
+            out.append({"type": "para", "text": pre_text})
+        out.append({"type": "formula", "den1": despace(fm.group(1)), "den2": despace(fm.group(2))})
+        post_text = strip_md(p[fm.end():]).strip()
+        if post_text:
+            out.append({"type": "para", "text": post_text})
         i += 1
         continue
 
