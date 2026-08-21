@@ -3,9 +3,10 @@ const {
   Document, Packer, Paragraph, TextRun, Header, Footer, AlignmentType,
   BorderStyle, PageNumber, PageBreak, Table, TableRow, TableCell, WidthType,
   ShadingType, TabStopType, HeadingLevel, TableOfContents,
-  NAVY, BLUE, ORANGE, INK, GRAY, FONT_BODY, FONT_HEAD, FONT_MONO,
+  NAVY, INK, GRAY, LIGHT_GRAY, SUBTITLE_GRAY, CALLOUT_TEXT, PAPER,
+  FONT_BODY, FONT_MONO,
   PAGE_W, PAGE_H, MARGIN_LR, MARGIN_TOP, MARGIN_BOTTOM, HEADER_H, FOOTER_H,
-  CONTENT_W_IN, WORD_STYLES, CHAPTER_NUMBERING, pageProps, makeHeader, makeFooter,
+  CONTENT_W_IN, WORD_STYLES, DEFAULT_STYLES, CHARACTER_STYLES, CHAPTER_NUMBERING, pageProps, makeHeader, makeFooter,
   body, bodyDropCap, subheading, questionHeading, taskLabel, answerLabel, answerText, answerBox,
   calloutBox, chapterOpener, introHeading, figureParagraph, figureRow,
   caption, captionMulti, ruleBreak, formulaParagraph, formulaWhere,
@@ -17,7 +18,6 @@ const path = require("path");
 // sizing figures the original docx rotated 90/270° to run the full height of the page.
 const PAGE_BODY_H_IN = (PAGE_H - MARGIN_TOP - MARGIN_BOTTOM - HEADER_H - FOOTER_H) / 1440;
 
-const BOOK_TITLE = "Вместе с космонавтами. Путешествие по Луне и Марсу";
 const blocks = JSON.parse(fs.readFileSync(path.join(__dirname, "classified.json"), "utf8"));
 
 //////////////////////// split into logical sections ////////////////////////
@@ -58,8 +58,8 @@ function renderBlocks(blks) {
     }
 
     if (b.type === "subheading") {
-      // a subheading phrased as a question gets the dedicated "Question" style
-      // (still a real Heading 2 — stays in the automatic TOC/navigation pane)
+      // internal subheadings and question-phrased subheadings share the identical REF-Question
+      // treatment (navy, left rule) — see design.js subheading()/questionHeading().
       out.push(b.text.trim().endsWith("?") ? questionHeading(b.text) : subheading(b.text));
       continue;
     }
@@ -71,7 +71,6 @@ function renderBlocks(blks) {
     }
 
     if (b.type === "answer_label") {
-      out.push(ruleBreak(260, 0));
       out.push(answerLabel());
       continue;
     }
@@ -101,10 +100,10 @@ function renderBlocks(blks) {
         const sideways = rotation % 180 !== 0;
         const maxH = sideways ? PAGE_BODY_H_IN : (im.h > im.w ? 3.6 : 3.0);
         const p = figureParagraph(im.file, im.w, im.h, undefined, maxH, 160, 60, rotation);
-        if (p) out.push(ruleBreak(200, 0)), out.push(p);
+        if (p) out.push(p);
       } else {
         const p = figureRow(b.images, 2.6);
-        if (p) out.push(ruleBreak(200, 0)), out.push(p);
+        if (p) out.push(p);
       }
       continue;
     }
@@ -148,7 +147,7 @@ function renderPlanetTable() {
       children: [new Paragraph({
         alignment: AlignmentType.CENTER,
         children: [new TextRun({
-          text, font: isHeader ? FONT_HEAD : FONT_MONO, size: 16,
+          text, font: isHeader ? FONT_BODY : FONT_MONO, size: 16,
           bold: isHeader, color: isHeader ? "FFFFFF" : INK,
         })],
       })],
@@ -157,8 +156,7 @@ function renderPlanetTable() {
   const dataRows = rows.map((r) => new TableRow({ children: r.map((c, i) => mkCell(c, i === 0)) }));
   const tbl = new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headerRow, ...dataRows] });
   return [
-    ruleBreak(200, 100),
-    new Paragraph({ style: "Heading3", children: [new TextRun({ text: "ТАБЛИЦА 1" })] }),
+    new Paragraph({ style: "REF-TableLabel", children: [new TextRun({ text: "ТАБЛИЦА 1" })] }),
     tbl,
     caption("", "Угловое смещение планет на фоне звёзд за сутки, месяц и полгода (в градусах)", 220),
   ];
@@ -170,17 +168,17 @@ const titleSection = {
   children: [
     new Paragraph({ spacing: { before: 2000 }, children: [new TextRun({ text: "" })] }),
     new Paragraph({ spacing: { before: 200, after: 0 }, alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: "НАУЧНО-ПОПУЛЯРНОЕ ИЗДАНИЕ", font: FONT_HEAD, size: 16, color: GRAY, characterSpacing: 36 })] }),
-    new Paragraph({ style: "Title", spacing: { before: 460, after: 0 }, children: [new TextRun({ text: "Вместе с космонавтами" })] }),
-    new Paragraph({ style: "Subtitle", spacing: { before: 200, after: 0 }, children: [new TextRun({ text: "Путешествие по Луне и Марсу" })] }),
+      children: [new TextRun({ text: "НАУЧНО-ПОПУЛЯРНОЕ ИЗДАНИЕ", font: FONT_MONO, size: 16, color: LIGHT_GRAY, characterSpacing: 36 })] }),
+    new Paragraph({ style: "REF-Title", spacing: { before: 460, after: 0 }, children: [new TextRun({ text: "Вместе с космонавтами" })] }),
+    new Paragraph({ style: "REF-Subtitle", spacing: { before: 200, after: 0 }, children: [new TextRun({ text: "Путешествие по Луне и Марсу" })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 460, after: 0 },
-      border: { top: { style: BorderStyle.SINGLE, size: 4, color: GRAY, space: 14 } }, children: [new TextRun({ text: "" })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 700, after: 0 },
-      children: [new TextRun({ text: "И. А. Ачарова  ·  М. Ю. Невский", font: FONT_HEAD, size: 22, color: NAVY, characterSpacing: 4 })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 2600 },
-      children: [new TextRun({ text: "ООО «Медиа-Полис»", font: FONT_HEAD, size: 17, color: GRAY, characterSpacing: 6 })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 40 },
-      children: [new TextRun({ text: "Ростов-на-Дону  ·  2026", font: FONT_HEAD, size: 17, color: GRAY, characterSpacing: 6 })] }),
+      border: { top: { style: BorderStyle.SINGLE, size: 4, color: NAVY, space: 14 } }, children: [new TextRun({ text: "" })] }),
+    new Paragraph({ style: "REF-Authors", spacing: { before: 700, after: 0 },
+      children: [new TextRun({ text: "И. А. Ачарова  ·  М. Ю. Невский" })] }),
+    new Paragraph({ style: "REF-Technical", spacing: { before: 2600, after: 40 },
+      children: [new TextRun({ text: "ООО «Медиа-Полис»" })] }),
+    new Paragraph({ style: "REF-Technical", spacing: { before: 0 },
+      children: [new TextRun({ text: "Ростов-на-Дону  ·  2026" })] }),
   ],
 };
 
@@ -188,15 +186,15 @@ const copyrightSection = {
   properties: { ...pageProps(), type: "nextPage" },
   children: [
     new Paragraph({ spacing: { before: 900 }, children: [new TextRun({ text: "" })] }),
-    new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "УДК 52-1  ·  ББК 22.6я721  ·  Н40", font: FONT_HEAD, size: 16, color: GRAY })] }),
-    new Paragraph({ spacing: { before: 260, after: 120 }, children: [new TextRun({ text: "Ачарова И. А., Невский М. Ю.", bold: true, font: FONT_HEAD, size: 20, color: NAVY })] }),
+    new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "УДК 52-1  ·  ББК 22.6я721  ·  Н40", font: FONT_MONO, size: 16, color: LIGHT_GRAY })] }),
+    new Paragraph({ spacing: { before: 260, after: 120 }, children: [new TextRun({ text: "Ачарова И. А., Невский М. Ю.", bold: true, font: FONT_BODY, size: 24, color: NAVY })] }),
     body("Вместе с космонавтами. Путешествие по Луне и Марсу. — Ростов-н/Д: ООО «Медиа-Полис», 2026.", { spacing: { after: 200, line: 280 } }),
-    new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "ISBN: присваивается издательством перед сдачей в печать", italics: true, font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ spacing: { after: 260 }, children: [new TextRun({ text: "ББК 22.6я721", font: FONT_HEAD, size: 16, color: GRAY })] }),
+    new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "ISBN: присваивается издательством перед сдачей в печать", italics: true, font: FONT_BODY, size: 20, color: GRAY })] }),
+    new Paragraph({ spacing: { after: 260 }, children: [new TextRun({ text: "ББК 22.6я721", font: FONT_MONO, size: 16, color: LIGHT_GRAY })] }),
     body("«Stellarium»: GNU General Public License.", { spacing: { after: 120, line: 280 } }),
     body("Все товарные знаки, бренды третьих лиц, названия продуктов, фирменные наименования и компании, упомянутые в издании, могут быть товарными знаками их соответствующих владельцев и используются в целях обучения и в интересах читателей, не подразумевая нарушения авторского права.", { spacing: { after: 260, line: 280 } }),
-    new Paragraph({ spacing: { before: 300 }, border: { top: { style: BorderStyle.SINGLE, size: 4, color: GRAY, space: 10 } },
-      children: [new TextRun({ text: "© ООО «Медиа-Полис», 2026", font: FONT_HEAD, size: 16, color: GRAY })] }),
+    new Paragraph({ spacing: { before: 300 }, border: { top: { style: BorderStyle.SINGLE, size: 4, color: NAVY, space: 10 } },
+      children: [new TextRun({ text: "© ООО «Медиа-Полис», 2026", font: FONT_MONO, size: 16, color: LIGHT_GRAY })] }),
   ],
 };
 
@@ -205,25 +203,25 @@ const docSections = [titleSection, copyrightSection];
 
 segments.forEach((seg) => {
   let opener = [];
-  let footerTitle = "";
+  let sectionTitle = "";
   if (seg.kind === "intro") {
-    footerTitle = "Введение";
+    sectionTitle = "Введение";
     opener = [introHeading("ВВЕДЕНИЕ")];
   } else if (seg.kind === "chapter") {
     const titleBlock = seg.blocks.find((b) => b.type === "chapter_title");
     const title = titleBlock ? titleBlock.text : ("Глава " + seg.num);
-    footerTitle = "Глава " + seg.num + ". " + title.charAt(0) + title.slice(1).toLowerCase();
+    sectionTitle = "Глава " + seg.num + ". " + title.charAt(0) + title.slice(1).toLowerCase();
     opener = chapterOpener(title);
   } else if (seg.kind === "conclusion") {
-    footerTitle = "Заключение";
+    sectionTitle = "Заключение";
     opener = [introHeading("ЗАКЛЮЧЕНИЕ")];
   }
 
   const body_ = renderBlocks(seg.blocks);
   docSections.push({
     properties: { ...pageProps(), type: "nextPage" },
-    headers: { default: makeHeader(BOOK_TITLE) },
-    footers: { default: makeFooter(footerTitle) },
+    headers: { default: makeHeader(sectionTitle) },
+    footers: { default: makeFooter() },
     children: [...opener, ...body_],
   });
 });
@@ -235,8 +233,8 @@ segments.forEach((seg) => {
 // baking or a separate PDF pre-render pass.
 const tocSection = {
   properties: { ...pageProps(), type: "nextPage" },
-  headers: { default: makeHeader(BOOK_TITLE) },
-  footers: { default: makeFooter("Содержание") },
+  headers: { default: makeHeader("Содержание") },
+  footers: { default: makeFooter() },
   children: [
     introHeading("СОДЕРЖАНИЕ"),
     new TableOfContents("Содержание", { hyperlink: true, headingStyleRange: "1-2" }),
@@ -255,13 +253,13 @@ const tocSection = {
 const colophonLines = JSON.parse(fs.readFileSync(path.join(__dirname, "colophon_lines.json"), "utf8"));
 const grayLine = (text, opts = {}) => new Paragraph({
   alignment: AlignmentType.CENTER, spacing: { after: 20, ...opts },
-  children: [new TextRun({ text, font: FONT_BODY, size: 18, color: GRAY })],
+  children: [new TextRun({ text, font: FONT_MONO, size: 18, color: LIGHT_GRAY })],
 });
 
 const colophonSection = {
   properties: { ...pageProps(), type: "nextPage" },
-  headers: { default: new Header({ children: [new Paragraph({ children: [] })] }) },
-  footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT_MONO, size: 17, color: GRAY })] })] }) },
+  headers: { default: makeHeader("Колофон") },
+  footers: { default: makeFooter() },
   children: [
     new Paragraph({ spacing: { before: 2200 }, children: [new TextRun({ text: "" })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 },
@@ -269,12 +267,12 @@ const colophonSection = {
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 },
       children: [new TextRun({ text: colophonLines[1], font: FONT_BODY, size: 20, color: INK })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: colophonLines[2], bold: true, font: FONT_HEAD, size: 24, color: NAVY })] }),
+      children: [new TextRun({ text: colophonLines[2], bold: true, font: FONT_BODY, size: 24, color: NAVY })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 320 },
-      children: [new TextRun({ text: colophonLines[3], italics: true, font: FONT_BODY, size: 21, color: BLUE })] }),
+      children: [new TextRun({ text: colophonLines[3], italics: true, font: FONT_BODY, size: 21, color: GRAY })] }),
     grayLine(colophonLines[4]),   // "Подписано в печать с оригинал-макета ..."
     grayLine(colophonLines[5]),   // "Формат 60×84 1/8. Бумага офсет."
-    grayLine("Гарнитуры Merriweather, Manrope, JetBrains Mono."), // this edition's real typefaces (source said "Times New Roman" — that was true of the original manuscript, not of this one)
+    grayLine("Гарнитуры Literata, JetBrains Mono."), // this edition's real typefaces (source said "Times New Roman" — that was true of the original manuscript, not of this one)
     grayLine(colophonLines[7]),   // "Печать офсетная. Усл. печ. л. ..."
     grayLine(colophonLines[8]),   // "Тираж ... Заказ № ..."
     grayLine(colophonLines[9], { before: 260 }),  // "Отпечатано в типографии ..."
@@ -286,7 +284,7 @@ const colophonSection = {
 //////////////////////// build the document ////////////////////////
 const doc = new Document({
   features: { updateFields: true }, // Word updates the TOC + any other fields automatically on open
-  styles: { paragraphStyles: WORD_STYLES },
+  styles: { default: DEFAULT_STYLES, paragraphStyles: WORD_STYLES, characterStyles: CHARACTER_STYLES },
   numbering: { config: [CHAPTER_NUMBERING] },
   sections: [...docSections, tocSection, colophonSection],
 });

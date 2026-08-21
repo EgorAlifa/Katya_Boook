@@ -9,122 +9,141 @@ const {
 } = require("docx");
 
 //////////////////////// DESIGN TOKENS ////////////////////////
-// Fixed palette — do not introduce other hexes anywhere in the document.
-const NAVY   = "0B1D3A"; // Deep Space — headings, chapter openers
-const BLUE   = "1F3A6D"; // secondary accent — rules, "Это интересно", "Ответ"
-const ORANGE = "E4572E"; // Mars Orange — sparingly: tasks, questions, small markers only
-const PAPER  = "F7F6F2"; // Warm Paper — very light fills only (never the page canvas: books print on
-                          // white/cream stock, a solid colour page background wastes ink and looks odd on screen)
-const INK    = "17202A"; // Dark Text — body copy (body text is dark, NOT navy)
-const GRAY   = "6B7280"; // Muted Gray — hairlines, captions, running heads
+// Fixed palette per the layout-correction brief — no orange anywhere, a single
+// navy accent everywhere headings/labels/rules used to be split between navy/
+// blue/orange, exact grays for secondary/technical text.
+const NAVY         = "1B2952"; // primary accent — headings, dropcap, ЗАДАЧА/ОТВЕТ, rules, page number
+const INK           = "232118"; // body copy
+const GRAY          = "666666"; // captions, header running text, secondary
+const LIGHT_GRAY    = "999999"; // light monospace/technical text (title-page imprint line)
+const SUBTITLE_GRAY = "54534B"; // title-page subtitle only
+const CALLOUT_TEXT  = "3A372F"; // "Это интересно" body text
+const PAPER         = "F7F6F2"; // very light neutral fill — "Это интересно" block background only,
+                                 // never the page canvas (books print on white/cream stock)
 
-const FONT_BODY = "Merriweather";      // body copy only
-const FONT_HEAD = "Manrope";           // headings, labels, navigation, captions
-const FONT_MONO = "JetBrains Mono";    // formulas, figure/task numbers, page numbers only — never body prose
+const FONT_BODY = "Literata";              // every heading/body/caption/title in the book
+const FONT_MONO = "JetBrains Mono Medium"; // ЗАДАЧА/ОТВЕТ, "ЭТО ИНТЕРЕСНО" label, page numbers,
+                                            // title-page technical imprint line — never body prose
 
-// Page geometry: the book's OWN colophon states its real print format explicitly —
-// "Формат 60×84 1/8" (a standard Russian sheet-fold notation), whose standard trimmed
-// page size is ~200x290mm. This is the authoritative source of truth for trim size
-// (found in parse_docx.py's colophon extraction — see README) — not a guess derived
-// from the Word page setup (which just reflects whatever printer was last selected,
-// not the publisher's intended trim) or from an unrelated reference file's size.
-const PAGE_W = 11339;
-const PAGE_H = 16441;
-const MARGIN_LR = 1200;
-const MARGIN_TOP = 1200;
-const MARGIN_BOTTOM = 1300;
-const HEADER_H = 500;
-const FOOTER_H = 620;
+// Page geometry: A4 portrait, ~2cm margins on every side (matches the brief's "около 2 см"
+// and yields the ~17cm text column the reference PDF's layout implies).
+const PAGE_W = 11906;      // 210mm
+const PAGE_H = 16838;      // 297mm
+const MARGIN_LR = 1134;    // ~2cm
+const MARGIN_TOP = 1134;
+const MARGIN_BOTTOM = 1134;
+const HEADER_H = 680;
+const FOOTER_H = 680;
 const CONTENT_W_IN = (PAGE_W - MARGIN_LR * 2) / 1440;
 
 const IMG_DIR = path_.join(__dirname, "img");
 
 //////////////////////// WORD STYLES — real, reusable paragraph styles ////////////////////////
 // Every block in the book is written through one of these `style:` ids, never through one-off
-// inline formatting — so editing "Heading 1" (or any other style) in Word's Styles pane restyles
-// every instance at once, exactly like a normal Word document.
+// inline formatting — so editing a style in Word's Styles pane restyles every instance at once.
+// All custom styles are named "REF-*" per the layout-correction brief; built-in Heading1/Heading2
+// keep their functional ids (required for `heading:` + the automatic TOC to work) but their
+// *display names* are renamed to the mandated "REF-Chapter" / "REF-Question".
 const WORD_STYLES = [
   {
-    id: "Title", name: "Title", basedOn: "Normal", next: "Subtitle", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 56, color: NAVY },
+    id: "REF-Title", name: "REF-Title", basedOn: "Normal", next: "REF-Subtitle", quickFormat: true,
+    run: { font: FONT_BODY, bold: true, size: 64, color: NAVY },
     paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 160 } },
   },
   {
-    id: "Subtitle", name: "Subtitle", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_BODY, italics: true, size: 26, color: BLUE },
+    id: "REF-Subtitle", name: "REF-Subtitle", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_BODY, italics: true, size: 34, color: SUBTITLE_GRAY },
     paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } },
   },
   {
-    id: "Heading1", name: "heading 1", basedOn: "Normal", next: "FirstParagraph", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 52, color: NAVY },
-    paragraph: { spacing: { before: 0, after: 240 }, keepNext: true,
-      border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: GRAY, space: 14 } } },
+    id: "REF-Authors", name: "REF-Authors", basedOn: "Normal", next: "REF-Technical", quickFormat: true,
+    run: { font: FONT_BODY, size: 28, color: NAVY },
+    paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 0 } },
   },
   {
-    id: "Heading2", name: "heading 2", basedOn: "Normal", next: "FirstParagraph", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 28, color: NAVY },
-    paragraph: { spacing: { before: 320, after: 160 }, indent: { left: 200 }, keepNext: true, keepLines: true,
-      border: { left: { style: BorderStyle.SINGLE, size: 12, color: BLUE, space: 8 } } },
+    id: "REF-Technical", name: "REF-Technical", basedOn: "Normal", next: "REF-Technical", quickFormat: true,
+    run: { font: FONT_MONO, size: 22, color: LIGHT_GRAY },
+    paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 40 } },
   },
   {
-    id: "Heading3", name: "heading 3", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 22, color: BLUE, characterSpacing: 14 },
-    paragraph: { spacing: { before: 200, after: 100 }, keepNext: true },
-  },
-  {
-    id: "BodyText", name: "Body Text", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_BODY, size: 21, color: INK },
+    id: "REF-Body", name: "REF-Body", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_BODY, size: 28, color: INK },
     paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 140, line: 276 } },
   },
   {
-    id: "FirstParagraph", name: "First Paragraph", basedOn: "BodyText", next: "BodyText", quickFormat: true,
-    run: { font: FONT_BODY, size: 21, color: INK },
+    id: "REF-FirstParagraph", name: "REF-FirstParagraph", basedOn: "REF-Body", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_BODY, size: 28, color: INK },
     paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 140, line: 276 } },
   },
   {
-    id: "Caption", name: "Caption", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_HEAD, italics: true, size: 18, color: GRAY },
+    id: "REF-Caption", name: "REF-Caption", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_BODY, italics: true, size: 24, color: GRAY },
     paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 }, keepLines: true },
   },
   {
-    id: "Question", name: "Question", basedOn: "Heading2", next: "FirstParagraph", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 26, color: ORANGE },
-    paragraph: { spacing: { before: 320, after: 160 }, indent: { left: 200 }, keepNext: true, keepLines: true,
-      outlineLevel: 1, // same outline level as Heading 2, so it still lands in the automatic TOC
-      border: { left: { style: BorderStyle.SINGLE, size: 12, color: ORANGE, space: 8 } } },
+    id: "REF-Task", name: "REF-Task", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_MONO, bold: false, size: 24, color: NAVY, characterSpacing: 10 },
+    paragraph: { spacing: { before: 300, after: 160 }, keepNext: true,
+      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: NAVY, space: 8 } } },
   },
   {
-    id: "Task", name: "Task", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 22, color: ORANGE, characterSpacing: 12 },
-    paragraph: { spacing: { before: 300, after: 100 }, keepNext: true },
+    id: "REF-Answer", name: "REF-Answer", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_MONO, bold: false, size: 24, color: NAVY, characterSpacing: 10 },
+    paragraph: { spacing: { before: 300, after: 160 }, keepNext: true,
+      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: NAVY, space: 8 } } },
   },
   {
-    id: "Answer", name: "Answer", basedOn: "Normal", next: "BodyText", quickFormat: true,
-    run: { font: FONT_HEAD, bold: true, size: 22, color: BLUE, characterSpacing: 12 },
-    paragraph: { spacing: { before: 220, after: 120 }, keepNext: true,
-      border: { top: { style: BorderStyle.SINGLE, size: 4, color: BLUE, space: 10 } } },
-  },
-  {
-    id: "Interesting", name: "Interesting", basedOn: "Normal", next: "Interesting", quickFormat: true,
-    run: { font: FONT_BODY, size: 20, color: INK },
+    id: "REF-Info", name: "REF-Info", basedOn: "Normal", next: "REF-Info", quickFormat: true,
+    run: { font: FONT_BODY, size: 26, color: CALLOUT_TEXT },
     paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 90, line: 268 } },
   },
   {
-    id: "Formula", name: "Formula", basedOn: "Normal", next: "BodyText", quickFormat: true,
+    id: "REF-Formula", name: "REF-Formula", basedOn: "Normal", next: "REF-Body", quickFormat: true,
     run: { font: FONT_MONO, size: 24, color: NAVY },
-    paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 220, after: 220 },
-      border: { top: { style: BorderStyle.SINGLE, size: 4, color: BLUE, space: 12 },
-                bottom: { style: BorderStyle.SINGLE, size: 4, color: BLUE, space: 12 } } },
+    paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 220, after: 220 } },
   },
   {
-    id: "Header", name: "Header", basedOn: "Normal", next: "Header", quickFormat: true,
-    run: { font: FONT_HEAD, italics: true, size: 17, color: GRAY },
-    paragraph: { spacing: { after: 60 }, border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: GRAY, space: 6 } } },
+    id: "REF-TableLabel", name: "REF-TableLabel", basedOn: "Normal", next: "REF-Body", quickFormat: true,
+    run: { font: FONT_BODY, bold: true, size: 26, color: NAVY, characterSpacing: 16 },
+    paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 200, after: 100 }, keepNext: true },
   },
   {
-    id: "Footer", name: "Footer", basedOn: "Normal", next: "Footer", quickFormat: true,
-    run: { font: FONT_HEAD, size: 17, color: GRAY },
-    paragraph: { spacing: { before: 0 }, border: { top: { style: BorderStyle.SINGLE, size: 2, color: GRAY, space: 6 } } },
+    id: "REF-Header", name: "REF-Header", basedOn: "Normal", next: "REF-Header", quickFormat: true,
+    run: { font: FONT_BODY, italics: true, size: 22, color: GRAY },
+    paragraph: { spacing: { after: 0 } },
+  },
+];
+
+// Heading1/Heading2 are overridden here (via `styles.default`), NOT as entries in WORD_STYLES —
+// docx.js always emits its own built-in Heading1/Heading2/Title/etc. style definitions from
+// DefaultStylesFactory regardless of what's in `paragraphStyles`; adding a same-id entry there
+// produces TWO <w:style styleId="Heading1"> elements in styles.xml (confirmed by inspecting the
+// generated XML), and LibreOffice resolves that collision by using the FIRST (unstyled default,
+// blue #2E74B5, left-aligned) one instead of ours. `styles.default.heading1/heading2` customizes
+// the factory's own single definition in place — this is the correct API for overriding built-in
+// styles that `heading:` refers to (`name` here is what shows up in Word's Styles pane, so this is
+// also where "REF-Chapter"/"REF-Question" are set, same as any other renamed style).
+const DEFAULT_STYLES = {
+  heading1: {
+    name: "REF-Chapter", quickFormat: true,
+    run: { font: FONT_BODY, bold: true, size: 40, color: NAVY },
+    paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 0, after: 260 }, keepNext: true },
+  },
+  heading2: {
+    name: "REF-Question", quickFormat: true,
+    run: { font: FONT_BODY, bold: true, size: 34, color: NAVY },
+    paragraph: { spacing: { before: 320, after: 160 }, indent: { left: 200 }, keepNext: true, keepLines: true,
+      border: { left: { style: BorderStyle.SINGLE, size: 16, color: NAVY, space: 8 } } },
+  },
+};
+
+// A genuine Word CHARACTER style (not a paragraph style) — applied only to the page-number
+// run inside the header, so it renders as JetBrains Mono Medium/navy against the surrounding
+// Literata italic gray section name, per the brief's mandated "REF-PageNumber" style.
+const CHARACTER_STYLES = [
+  {
+    id: "REF-PageNumber", name: "REF-PageNumber", basedOn: "DefaultParagraphFont",
+    run: { font: FONT_MONO, size: 22, color: NAVY },
   },
 ];
 
@@ -135,21 +154,26 @@ const CHAPTER_NUMBERING = {
   reference: "chapter-numbering",
   levels: [{
     level: 0, format: LevelFormat.DECIMAL, text: "ГЛАВА %1", start: 1,
-    alignment: AlignmentType.LEFT,
-    style: { run: { font: FONT_HEAD, bold: true, size: 22, color: BLUE, characterSpacing: 32 } },
+    alignment: AlignmentType.CENTER,
+    style: { run: { font: FONT_BODY, bold: true, size: 24, color: NAVY, characterSpacing: 28 } },
   }],
 };
 
 //////////////////////// IMAGE HELPERS (native size from the original docx — never
 // resized/re-rotated on our own initiative; only downscaled if it would overflow the
 // page, and rotated ONLY when the original document itself rotated that picture) ////////////////////////
+// The layout brief caps any deviation from the image's own declared size at ±15% — so the
+// overflow-fit scale is clamped to that band instead of shrinking arbitrarily to fit the page.
+const MIN_SCALE = 0.85;
+
 function imgDimsNative(declWIn, declHIn, maxWidthIn, maxHeightIn, rotation = 0) {
   let wIn = declWIn;
   let hIn = declHIn;
   const swapped = ((rotation % 360) + 360) % 360 % 180 !== 0;
   const footW = swapped ? hIn : wIn;
   const footH = swapped ? wIn : hIn;
-  const scale = Math.min(1, maxWidthIn ? maxWidthIn / footW : 1, maxHeightIn ? maxHeightIn / footH : 1);
+  let scale = Math.min(1, maxWidthIn ? maxWidthIn / footW : 1, maxHeightIn ? maxHeightIn / footH : 1);
+  if (scale < MIN_SCALE) scale = MIN_SCALE; // never shrink an image more than 15% below its native size
   if (scale < 1) {
     wIn *= scale;
     hIn *= scale;
@@ -213,34 +237,26 @@ function ruleBreak(spacingBefore = 220, spacingAfter = 0) {
   });
 }
 
-// figure/table numbers are the source's own numbering scheme ("Рисунок 2-11", chapter-figure), not
-// a simple sequential count — so they stay literal text (see README) rather than a Word SEQ field,
-// but the numeral itself is set in JetBrains Mono as "technical/numeric data".
+// figure/table numbers use the source's own numbering scheme ("Рисунок 2-11", chapter-figure), so
+// they stay literal text (see README) rather than a Word SEQ field. Per the layout brief the whole
+// caption is one plain Literata Italic gray run directly under the image — no bold/mono/color accent.
 function caption(numLabel, desc, spacingAfter = 200) {
   return new Paragraph({
-    style: "Caption",
+    style: "REF-Caption",
     spacing: { after: spacingAfter },
-    children: [
-      new TextRun({ text: numLabel + " ", font: FONT_MONO, italics: false, bold: true, color: BLUE, size: 17 }),
-      new TextRun({ text: desc, font: FONT_HEAD, italics: true, color: GRAY, size: 18 }),
-    ],
+    children: [new TextRun({ text: (numLabel ? numLabel + " " : "") + desc })],
   });
 }
 
 function captionMulti(items, spacingAfter = 200) {
-  const runs = [];
-  items.forEach((it, idx) => {
-    if (idx > 0) runs.push(new TextRun({ text: "  ", font: FONT_HEAD, size: 18 }));
-    runs.push(new TextRun({ text: it.num + " ", font: FONT_MONO, bold: true, color: BLUE, size: 17 }));
-    runs.push(new TextRun({ text: it.desc, font: FONT_HEAD, italics: true, color: GRAY, size: 18 }));
-  });
-  return new Paragraph({ style: "Caption", spacing: { after: spacingAfter }, children: runs });
+  const text = items.map((it) => (it.num ? it.num + " " : "") + it.desc).join("   ");
+  return new Paragraph({ style: "REF-Caption", spacing: { after: spacingAfter }, children: [new TextRun({ text })] });
 }
 
 //////////////////////// TEXT HELPERS ////////////////////////
 function body(text, opts = {}) {
   return new Paragraph({
-    style: "BodyText",
+    style: "REF-Body",
     children: [new TextRun({ text })],
     ...opts,
   });
@@ -248,9 +264,9 @@ function body(text, opts = {}) {
 
 function bodyDropCap(firstLetter, rest, opts = {}) {
   return new Paragraph({
-    style: "FirstParagraph",
+    style: "REF-FirstParagraph",
     children: [
-      new TextRun({ text: firstLetter, bold: true, font: FONT_HEAD, size: 40, color: NAVY }),
+      new TextRun({ text: firstLetter, bold: true, font: FONT_BODY, size: 64, color: NAVY }),
       new TextRun({ text: rest }),
     ],
     ...opts,
@@ -265,86 +281,65 @@ function subheading(text) {
   return new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text })] });
 }
 
-// a subsection heading phrased as a navigational question — same outline level as subheading (so it
-// still shows up in the automatic TOC/navigation pane) but with the "Question" visual treatment.
-// Can't use `heading:` here (it would force the built-in "Heading2" style, clobbering "Question"),
-// so the outline level is set directly instead — same TOC effect, no duplicate pStyle.
+// A subsection heading phrased as a navigational question. The layout brief gives internal
+// subheadings and questions the identical visual treatment (navy, left rule) — so this is the
+// exact same built-in Heading2 style as subheading(); kept as a separate named function only so
+// call sites stay self-documenting about which kind of heading they're rendering.
 function questionHeading(text) {
-  return new Paragraph({
-    style: "Question", outlineLevel: 1,
-    children: [new TextRun({ text })],
-  });
+  return new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text })] });
 }
 
 function taskLabel(numText) {
   return new Paragraph({
-    style: "Task",
-    children: [
-      new TextRun({ text: "ЗАДАЧА ", font: FONT_HEAD }),
-      new TextRun({ text: numText, font: FONT_MONO }),
-    ],
-  });
-}
-
-function box(paragraphs, { fill, borderColor, borderSize = 3, sides = ["top", "bottom", "left", "right"] }) {
-  const spec = { style: BorderStyle.SINGLE, size: borderSize, color: borderColor };
-  const borders = {};
-  sides.forEach((s) => (borders[s] = spec));
-  ["top", "bottom", "left", "right"].forEach((s) => {
-    if (!borders[s]) borders[s] = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
-  });
-  const cell = new TableCell({
-    children: paragraphs,
-    shading: { type: ShadingType.CLEAR, color: "auto", fill },
-    borders,
-    margins: { top: 160, bottom: 160, left: 220, right: 220 },
-    width: { size: 100, type: WidthType.PERCENTAGE },
-  });
-  return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [new TableRow({ cantSplit: true, children: [cell] })],
+    style: "REF-Task",
+    children: [new TextRun({ text: "ЗАДАЧА " + numText })],
   });
 }
 
 function answerLabel() {
-  return new Paragraph({ style: "Answer", children: [new TextRun({ text: "ОТВЕТ" })] });
+  return new Paragraph({ style: "REF-Answer", children: [new TextRun({ text: "ОТВЕТ" })] });
 }
 
 function answerText(text, isLast = false) {
   return new Paragraph({
-    style: "BodyText",
+    style: "REF-Body",
     spacing: { after: isLast ? 200 : 120 },
     children: [new TextRun({ text })],
   });
 }
 
 function answerBox(paragraphs) {
-  return [ruleBreak(260, 0), ...paragraphs];
+  return [...paragraphs];
 }
 
+// "Это интересно" callout — a plain shaded block (no table/border/frame): a light neutral fill
+// carried across every paragraph in the block with matching indent, so it reads as one seamless
+// panel. Padding top/bottom is a thin same-fill spacer paragraph rather than a box margin.
 function calloutBox(title, bodyLines) {
+  const fill = { type: ShadingType.CLEAR, color: "auto", fill: PAPER };
+  const pad = { left: 220, right: 220 };
   const paras = [];
+  paras.push(new Paragraph({ shading: fill, indent: pad, spacing: { before: 0, after: 0 }, children: [new TextRun({ text: "" })] }));
   paras.push(new Paragraph({
-    spacing: { after: 90 }, keepNext: true,
-    children: [new TextRun({ text: "ЭТО ИНТЕРЕСНО", bold: true, font: FONT_HEAD, size: 17, color: BLUE, characterSpacing: 20 })],
+    shading: fill, indent: pad, spacing: { after: 90 }, keepNext: true,
+    children: [new TextRun({ text: "ЭТО ИНТЕРЕСНО", font: FONT_MONO, size: 22, color: NAVY, characterSpacing: 20 })],
   }));
   if (title) {
     paras.push(new Paragraph({
-      spacing: { after: 90 }, keepNext: true,
-      children: [new TextRun({ text: title, bold: true, font: FONT_HEAD, size: 21, color: NAVY })],
+      shading: fill, indent: pad, spacing: { after: 90 }, keepNext: true,
+      children: [new TextRun({ text: title, italics: true, font: FONT_BODY, size: 30, color: NAVY })],
     }));
   }
   bodyLines.forEach((t, i) => {
     paras.push(new Paragraph({
-      style: "Interesting",
+      style: "REF-Info", shading: fill, indent: pad,
       spacing: { after: i === bodyLines.length - 1 ? 0 : 90, line: 268 },
       children: [new TextRun({ text: t })],
     }));
   });
-  return [
-    box(paras, { fill: "FFFFFF", borderColor: BLUE, borderSize: 3 }),
-    new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: "" })] }),
-  ];
+  paras.push(new Paragraph({ shading: fill, indent: pad, spacing: { before: 0, after: 0 }, children: [new TextRun({ text: "" })] }));
+  paras.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: "" })] }));
+  return paras;
 }
 
 // chapter opener: real auto-numbered "ГЛАВА %1" (Word field, per-paragraph numbering — see
@@ -363,7 +358,6 @@ function chapterOpener(title) {
 function introHeading(text) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_1,
-    alignment: AlignmentType.CENTER,
     children: [new TextRun({ text })],
   });
 }
@@ -374,7 +368,7 @@ function introHeading(text) {
 function formulaParagraph(den1, den2) {
   const frac = (num, den) => new MathFraction({ numerator: [new MathRun(num)], denominator: [new MathRun(den)] });
   return new Paragraph({
-    style: "Formula",
+    style: "REF-Formula",
     children: [
       new MathZone({
         children: [
@@ -389,42 +383,33 @@ function formulaParagraph(den1, den2) {
 
 function formulaWhere(text) {
   return new Paragraph({
+    alignment: AlignmentType.CENTER,
     spacing: { before: 80, after: 200 },
-    children: [new TextRun({ text, font: FONT_HEAD, size: 17, color: GRAY, italics: true })],
+    children: [new TextRun({ text, font: FONT_BODY, size: 22, color: GRAY, italics: true })],
   });
 }
 
-//////////////////////// HEADER / FOOTER (real Word Header/Footer, styled) ////////////////////////
-function makeHeader(bookTitle) {
+//////////////////////// HEADER / FOOTER (real Word Header/Footer) ////////////////////////
+// Header (top of page only): current section name on the left, automatic page number on the
+// right — nothing else, no book title. Footer: completely empty, by explicit request.
+function makeHeader(sectionTitle) {
   return new Header({
     children: [
       new Paragraph({
-        style: "Header",
+        style: "REF-Header",
         tabStops: [{ type: TabStopType.RIGHT, position: PAGE_W - MARGIN_LR * 2 }],
         children: [
-          new TextRun({ text: bookTitle }),
+          new TextRun({ text: sectionTitle || "" }),
           new TextRun({ text: "\t" }),
-          new TextRun({ children: [PageNumber.CURRENT], font: FONT_MONO }),
+          new TextRun({ children: [PageNumber.CURRENT], style: "REF-PageNumber" }),
         ],
       }),
     ],
   });
 }
 
-function makeFooter(sectionTitle) {
-  return new Footer({
-    children: [
-      new Paragraph({
-        style: "Footer",
-        tabStops: [{ type: TabStopType.RIGHT, position: PAGE_W - MARGIN_LR * 2 }],
-        children: [
-          new TextRun({ text: sectionTitle }),
-          new TextRun({ text: "\t" }),
-          new TextRun({ children: [PageNumber.CURRENT], bold: true, font: FONT_MONO, size: 18, color: NAVY }),
-        ],
-      }),
-    ],
-  });
+function makeFooter() {
+  return new Footer({ children: [new Paragraph({ children: [] })] });
 }
 
 const pageProps = () => ({
@@ -440,12 +425,12 @@ module.exports = {
   PageNumber, LevelFormat, convertInchesToTwip, VerticalAlign,
   TabStopType, TabStopPosition, PageBreak, Table, TableRow, TableCell,
   HeadingLevel, TableOfContents,
-  NAVY, BLUE, ORANGE, PAPER, INK, GRAY,
-  FONT_BODY, FONT_HEAD, FONT_MONO, PAGE_W, PAGE_H, MARGIN_LR, MARGIN_TOP, MARGIN_BOTTOM,
+  NAVY, INK, GRAY, LIGHT_GRAY, SUBTITLE_GRAY, CALLOUT_TEXT, PAPER,
+  FONT_BODY, FONT_MONO, PAGE_W, PAGE_H, MARGIN_LR, MARGIN_TOP, MARGIN_BOTTOM,
   HEADER_H, FOOTER_H, CONTENT_W_IN, IMG_DIR,
-  WORD_STYLES, CHAPTER_NUMBERING,
+  WORD_STYLES, DEFAULT_STYLES, CHARACTER_STYLES, CHAPTER_NUMBERING,
   imgDimsNative, imageRunFromFile, figureParagraph, figureRow, ruleBreak,
-  caption, captionMulti, body, bodyDropCap, subheading, questionHeading, taskLabel, box,
+  caption, captionMulti, body, bodyDropCap, subheading, questionHeading, taskLabel,
   answerLabel, answerText, answerBox, calloutBox, chapterOpener, introHeading,
   formulaParagraph, formulaWhere,
   makeHeader, makeFooter, pageProps,
