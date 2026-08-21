@@ -1,12 +1,10 @@
-# build artifacts reproducible via README pipeline
+# build artifacts reproducible via README pipeline (node build-full.js, python3 parse_docx.py)
 node_modules/
 package.json
 package-lock.json
-original_unzip/
 img/
-book.md
 book_full.pdf
 book_full.txt
 book_full.docx
-parsed_raw.json
 classified.json
+colophon_lines.json

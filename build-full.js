@@ -244,6 +244,20 @@ const tocSection = {
 };
 
 //////////////////////// Colophon (imprint) ////////////////////////
+// Real colophon text extracted straight from the source docx's own tail
+// (parse_docx.py -> colophon_lines.json) — the old build-full.js had this
+// hand-typed with invented placeholder wording; the manuscript's own real
+// colophon was sitting unread in parsed_raw.json's ignored "tail" field the
+// whole time. Everything here is quoted as printed EXCEPT the typeface line:
+// the source says "Гарнитура Times New Roman" (true of the ORIGINAL
+// manuscript), which would be a factual error about THIS edition — replaced
+// with what this edition actually uses.
+const colophonLines = JSON.parse(fs.readFileSync(path.join(__dirname, "colophon_lines.json"), "utf8"));
+const grayLine = (text, opts = {}) => new Paragraph({
+  alignment: AlignmentType.CENTER, spacing: { after: 20, ...opts },
+  children: [new TextRun({ text, font: FONT_BODY, size: 18, color: GRAY })],
+});
+
 const colophonSection = {
   properties: { ...pageProps(), type: "nextPage" },
   headers: { default: new Header({ children: [new Paragraph({ children: [] })] }) },
@@ -251,29 +265,21 @@ const colophonSection = {
   children: [
     new Paragraph({ spacing: { before: 2200 }, children: [new TextRun({ text: "" })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 },
-      children: [new TextRun({ text: "Ачарова Ирина Александровна", font: FONT_BODY, size: 20, color: INK })] }),
+      children: [new TextRun({ text: colophonLines[0], font: FONT_BODY, size: 20, color: INK })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 },
-      children: [new TextRun({ text: "Невский Михаил Юрьевич", font: FONT_BODY, size: 20, color: INK })] }),
+      children: [new TextRun({ text: colophonLines[1], font: FONT_BODY, size: 20, color: INK })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Вместе с космонавтами", bold: true, font: FONT_HEAD, size: 24, color: NAVY })] }),
+      children: [new TextRun({ text: colophonLines[2], bold: true, font: FONT_HEAD, size: 24, color: NAVY })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 320 },
-      children: [new TextRun({ text: "Путешествие по Луне и Марсу", italics: true, font: FONT_BODY, size: 21, color: BLUE })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Подписано в печать с оригинал-макета — [заполняется издательством]", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Формат 165×235 мм. Бумага офсетная.", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Гарнитуры Merriweather, Manrope, JetBrains Mono.", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Печать офсетная. Усл. печ. л. — [заполняется издательством]", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "Тираж — [заполняется издательством]. Заказ № — [заполняется издательством]", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 260, after: 20 },
-      children: [new TextRun({ text: "Отпечатано в типографии ООО «Медиа-Полис»", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "г. Ростов-на-Дону, пр. М. Нагибина, 14 А", font: FONT_BODY, size: 18, color: GRAY })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 },
-      children: [new TextRun({ text: "www.media-polis.ru", font: FONT_BODY, size: 18, color: GRAY })] }),
+      children: [new TextRun({ text: colophonLines[3], italics: true, font: FONT_BODY, size: 21, color: BLUE })] }),
+    grayLine(colophonLines[4]),   // "Подписано в печать с оригинал-макета ..."
+    grayLine(colophonLines[5]),   // "Формат 60×84 1/8. Бумага офсет."
+    grayLine("Гарнитуры Merriweather, Manrope, JetBrains Mono."), // this edition's real typefaces (source said "Times New Roman" — that was true of the original manuscript, not of this one)
+    grayLine(colophonLines[7]),   // "Печать офсетная. Усл. печ. л. ..."
+    grayLine(colophonLines[8]),   // "Тираж ... Заказ № ..."
+    grayLine(colophonLines[9], { before: 260 }),  // "Отпечатано в типографии ..."
+    grayLine(colophonLines[10]),  // address
+    grayLine(colophonLines[11]),  // website
   ],
 };
 

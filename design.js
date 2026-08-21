@@ -22,14 +22,17 @@ const FONT_BODY = "Merriweather";      // body copy only
 const FONT_HEAD = "Manrope";           // headings, labels, navigation, captions
 const FONT_MONO = "JetBrains Mono";    // formulas, figure/task numbers, page numbers only — never body prose
 
-// Page geometry: kept at the original book's own trim (165 x 235 mm) rather than switched to A4 —
-// this already IS the book's real published trim size (a standard Russian trade-paperback format),
-// so "as close as possible to the source PDF" means keeping it, not forcing a generic A4 page.
-const PAGE_W = 9354;
-const PAGE_H = 13323;
-const MARGIN_LR = 1000;
-const MARGIN_TOP = 1000;
-const MARGIN_BOTTOM = 1100;
+// Page geometry: the book's OWN colophon states its real print format explicitly —
+// "Формат 60×84 1/8" (a standard Russian sheet-fold notation), whose standard trimmed
+// page size is ~200x290mm. This is the authoritative source of truth for trim size
+// (found in parse_docx.py's colophon extraction — see README) — not a guess derived
+// from the Word page setup (which just reflects whatever printer was last selected,
+// not the publisher's intended trim) or from an unrelated reference file's size.
+const PAGE_W = 11339;
+const PAGE_H = 16441;
+const MARGIN_LR = 1200;
+const MARGIN_TOP = 1200;
+const MARGIN_BOTTOM = 1300;
 const HEADER_H = 500;
 const FOOTER_H = 620;
 const CONTENT_W_IN = (PAGE_W - MARGIN_LR * 2) / 1440;
